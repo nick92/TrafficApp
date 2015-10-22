@@ -15,13 +15,15 @@ class Traffic {
         this.duration = duration;
     }
 
-    private List<Traffic> trafficList;
+    private static int lastContactId = 0;
 
-    private void initializeData(){
-        trafficList = new ArrayList<>();
-        trafficList.add(new Traffic("Very Good", "10"));
-        trafficList.add(new Traffic("Terrible", "60"));
-        trafficList.add(new Traffic("Bad", "50"));
-        trafficList.add(new Traffic("Good", "20"));
+    public static List<Traffic> createContactsList(int numContacts) {
+        List<Traffic> traffic = new ArrayList<>();
+
+        for (int i = 1; i <= numContacts; i++) {
+            traffic.add(new Traffic("Traffic " + ++lastContactId, "email.com"));
+        }
+
+        return traffic;
     }
 }

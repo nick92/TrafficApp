@@ -40,6 +40,12 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.TrafficViewHolder>
         super.onAttachedToRecyclerView(recyclerView);
     }
 
+
+    public void addItemsToList(List<Traffic> traffic)
+    {
+        this.traffic = traffic;
+    }
+
     RVAdapter(List<Traffic> traffic){
         this.traffic = traffic;
     }
