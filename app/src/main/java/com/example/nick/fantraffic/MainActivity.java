@@ -1,6 +1,7 @@
 package com.example.nick.fantraffic;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -22,6 +23,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST);
         mRecyclerView.addItemDecoration(itemDecoration);
 
-        adapter = new RVAdapter(traffic);
+        adapter = new RVAdapter(traffic, this);
         mRecyclerView.setAdapter(adapter);
 
         mRecyclerView.setLayoutManager(llm);
@@ -77,6 +79,16 @@ public class MainActivity extends AppCompatActivity {
         initializeData();
     }
 
+    public void sendMessage(View v)
+    {
+        Intent inent = new Intent(this, DisplayTrafficInfoActivity.class);
+        int id = v.getId();
+
+        inent.putExtra("flow", traffic.get(id).flow);
+        inent.putExtra("duration", traffic.get(id).duration);
+
+        startActivity(inent);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -93,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            initializeData();
             return true;
         }
 
@@ -106,13 +119,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeData(){
         String strJsonData;
-        String strHttpJsonResponse;
 
         strJsonData = "http://traffic.cit.api.here.com/traffic/6.0/incidents.json" +
                 "?app_id=wa1d1f5iSh0BQqHHtLI5" +
                 "&app_code=br5kbaTStGduNL9LYzPD8w" +
                 "&quadkey=0313113200";
-        //strJsonData = "http://api.androidhive.info/volley/person_array.json";
 
         newRequestQueue(strJsonData);
     }
@@ -122,10 +133,11 @@ public class MainActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
         // Request a string response from the provided URL.
 
-        JsonArrayRequest JsonRequest = new JsonArrayRequest(url,
-                new Response.Listener<JSONArray>() {
+        JsonObjectRequest JsonRequest = new JsonObjectRequest(Request.Method.GET,url,
+                null,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONArray response) {
+                    public void onResponse(JSONObject response) {
                         // Display the first 500 characters of the response string.
                         //strHttpResponse[0] = response.substring(0,500);
                         Snackbar.make(mRecyclerView, "Data returned", Snackbar.LENGTH_LONG)
@@ -143,12 +155,15 @@ public class MainActivity extends AppCompatActivity {
         queue.add(JsonRequest);
     }
 
-    public void populateTrafficData(JSONArray json)
+
+    public void populateTrafficData(JSONObject json)
     {
         try {
             //traffic = new ArrayList<>();
-            for(int i = 0; i < 2; i++) {
-                traffic.add(new Traffic(json.getJSONObject(i).getString("name"), json.getJSONObject(i).getString("email")));
+            JSONArray array = json.getJSONObject("TRAFFICITEMS").getJSONArray("TRAFFICITEM");
+
+            for(int i = 1; i < array.length(); i++) {
+                traffic.add(new Traffic(array.getJSONObject(i).getJSONArray("TRAFFICITEMDESCRIPTION").getJSONObject(1).getString("content").isEmpty() ? "no comment" : array.getJSONObject(i).getString("COMMENTS") , array.getJSONObject(i).getString("TRAFFICITEMSTATUSSHORTDESC")));
             }
         }catch (JSONException jex)
         {}
