@@ -22,7 +22,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.TrafficViewHolder>
     private int id;
     @Override
     public TrafficViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_main, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.traffic_card, parent, false);
         TrafficViewHolder pvh = new TrafficViewHolder(v);
         return pvh;
     }

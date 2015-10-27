@@ -16,4 +16,14 @@ class Traffic {
     }
 
     private static int lastContactId = 0;
+
+    public static List<Traffic> createContactsList(int numContacts) {
+        List<Traffic> traffic = new ArrayList<>();
+
+        for (int i = 1; i <= numContacts; i++) {
+            traffic.add(new Traffic("Traffic " + ++lastContactId, "email.com"));
+        }
+
+        return traffic;
+    }
 }
